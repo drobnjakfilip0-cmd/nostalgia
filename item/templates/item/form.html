@@ -1,0 +1,221 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<div class="min-h-[90vh] flex items-center justify-center py-16">
+
+    <div class="w-full max-w-4xl paper rounded-3xl overflow-hidden relative">
+
+        <!-- dekoracija -->
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-[#c2410c]/10 blur-3xl rounded-full"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-black/5 blur-3xl rounded-full"></div>
+
+        <div class="relative z-10 grid lg:grid-cols-5">
+
+            <!-- LEVA STRANA -->
+            <div class="lg:col-span-2 p-10 border-b lg:border-b-0 lg:border-r border-black/10">
+
+                <p class="uppercase tracking-[0.3em] text-[#c2410c] text-sm font-bold mb-4">
+                    Marketplace
+                </p>
+
+                <h1 class="text-4xl font-black leading-tight mb-6 text-black">
+                    {{ title }}
+                </h1>
+
+                <p class="text-gray-600 leading-relaxed text-[15px]">
+                    Kreiraj jasan oglas koji pomaže kupcima da brzo razumeju proizvod.
+                    Dobar opis i kvalitetne slike prave razliku između “pregledano” i “kupljeno”.
+                </p>
+
+                <!-- SAVETI -->
+                <div class="mt-10 paper rounded-2xl p-6 border border-black/10">
+
+                    <p class="text-lg font-black text-black mb-5">
+                        Saveti za oglas
+                    </p>
+
+                    <ul class="space-y-4 text-[15px] text-gray-700">
+
+                        <li class="flex items-start gap-3">
+                            <span class="text-[#c2410c] font-bold">•</span>
+                            Koristi jasne i oštre fotografije
+                        </li>
+
+                        <li class="flex items-start gap-3">
+                            <span class="text-[#c2410c] font-bold">•</span>
+                            Napiši detaljan opis proizvoda
+                        </li>
+
+                        <li class="flex items-start gap-3">
+                            <span class="text-[#c2410c] font-bold">•</span>
+                            Postavi realnu cenu
+                        </li>
+
+                        <li class="flex items-start gap-3">
+                            <span class="text-[#c2410c] font-bold">•</span>
+                            Izbegavaj mutne slike iz lošeg osvetljenja
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <!-- FORMA -->
+            <div class="lg:col-span-3 p-10">
+
+                <form method="post" enctype="multipart/form-data" class="space-y-7">
+
+                    {% csrf_token %}
+
+                   
+                    {% for field in form %}
+    {% if field.name != "sizes" %}
+
+                        <div>
+
+                            <!-- LABEL (NEMA UPPERCASE ZA BITNE POLJA) -->
+                            <label class="block mb-3 text-sm font-semibold text-gray-700">
+
+                                {{ field.label }}
+
+                            </label>
+
+                            <!-- INPUT -->
+                            <div class="paper rounded-xl border border-black/10 p-3 focus-within:border-[#c2410c] transition">
+
+                                {{ field }}
+
+                            </div>
+
+                            {% if field.help_text %}
+                                <p class="mt-2 text-xs text-gray-500">
+                                    {{ field.help_text }}
+                                </p>
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <div class="mt-3 text-sm text-red-600">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if form.sizes %}
+
+<div>
+    <label class="block mb-3 text-sm font-semibold text-gray-700">
+        Veličine
+    </label>
+
+    <div class="flex flex-wrap gap-3">
+
+        {% for checkbox in form.sizes %}
+        <label class="cursor-pointer">
+
+            <input type="checkbox"
+                   name="{{ checkbox.name }}"
+                   value="{{ checkbox.choice_value }}"
+                   class="hidden peer">
+
+            <div class="px-4 py-2 rounded-xl border border-black/10
+                        text-sm font-medium bg-white
+                        peer-checked:bg-[#c2410c]
+                        peer-checked:text-white
+                        peer-checked:border-[#c2410c]
+                        hover:border-[#c2410c]
+                        transition">
+                {{ checkbox.choice_label }}
+            </div>
+
+        </label>
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endif %}
+                    
+
+                    <!-- DODATNE SLIKE -->
+                    <div>
+
+                        <label class="block mb-3 text-sm font-semibold text-gray-700">
+                            Dodatne slike
+                        </label>
+
+                        <label
+                            class="flex flex-col items-center justify-center w-full min-h-[200px]
+                                   rounded-2xl border-2 border-dashed border-black/10
+                                   hover:border-[#c2410c] transition cursor-pointer bg-white/40">
+
+                            <div class="text-center p-6">
+
+                                <div class="text-5xl mb-3">
+                                    📷
+                                </div>
+
+                                <p class="text-lg font-bold text-black">
+                                    Dodaj slike
+                                </p>
+
+                                <p class="text-sm text-gray-500 mt-2">
+                                    PNG, JPG, WEBP
+                                </p>
+
+                            </div>
+
+                            <input type="file" name="images" multiple class="hidden">
+
+                        </label>
+
+                    </div>
+
+                    <!-- NON FIELD ERRORS -->
+                    {% if form.non_field_errors %}
+
+                        <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+
+                            {{ form.non_field_errors }}
+
+                        </div>
+
+                    {% endif %}
+
+                    <!-- DUGMAD -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6">
+
+                        <button
+                            class="flex-1 py-4 rounded-xl bg-[#c2410c] hover:bg-[#9a3412] text-white font-bold transition">
+
+                            Sačuvaj oglas
+
+                        </button>
+
+                        <a href="{% url 'item:items' %}"
+                           class="flex items-center justify-center px-8 py-4 rounded-xl bg-black text-white hover:opacity-90 transition">
+
+                            Otkaži
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

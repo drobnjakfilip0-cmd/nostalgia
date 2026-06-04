@@ -1,0 +1,92 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="min-h-[75vh] flex items-center justify-center">
+
+    <!-- CARD -->
+    <div class="w-full max-w-md paper rounded-2xl p-10 relative overflow-hidden">
+
+        <!-- subtle background texture vibe -->
+        <div class="absolute inset-0 opacity-[0.03] bg-black"></div>
+
+        <div class="relative z-10">
+
+            <p class="uppercase tracking-[0.3em] text-[#c2410c] text-sm mb-3">
+                Povratak u kolekciju
+            </p>
+
+            <h1 class="text-4xl font-black mb-8">
+                Prijava
+            </h1>
+
+            <form method="post" action="." class="space-y-6">
+
+                {% csrf_token %}
+
+                <!-- Username -->
+                <div>
+                    <label class="block mb-2 text-sm text-gray-600">
+                        Username
+                    </label>
+
+                    <div class="paper border border-black/10 rounded-xl p-3">
+                        {{ form.username }}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block mb-2 text-sm text-gray-600">
+                        Password
+                    </label>
+
+                    <div class="paper border border-black/10 rounded-xl p-3">
+                        {{ form.password }}
+                    </div>
+                    
+                </div>
+                <a href="{% url 'core:password_reset' %}"
+   class="text-sm text-[#c2410c] hover:underline">
+    Zaboravili ste lozinku?
+</a>
+
+                <!-- Errors -->
+                {% if form.errors or form.non_field_errors %}
+
+                    <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+
+                        {% for field in form %}
+                            {{ field.errors }}
+                        {% endfor %}
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+                <!-- BUTTON -->
+               <button
+    class="w-full py-4 rounded-xl bg-[#c2410c] hover:bg-[#9a3412]
+           text-white font-bold text-lg transition
+           shadow-sm hover:shadow-md active:scale-[0.99]">
+
+    oseti
+    <span class="font-['Sunbeat'] text-2xl md:text-3xl ml-1 align-middle tracking-normal">
+        Nostalgiju
+    </span>
+
+</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

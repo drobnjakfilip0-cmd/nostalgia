@@ -1,0 +1,126 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Uredi profil{% endblock %}
+
+{% block content %}
+
+<div class="max-w-xl mx-auto">
+
+    <div class="paper rounded-2xl p-10">
+
+        <h1 class="text-3xl font-black mb-2">
+            Uredi profil
+        </h1>
+
+        <p class="text-gray-500 mb-8">
+            Ažuriraj svoje podatke naloga.
+        </p>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+
+            <!-- AVATAR SECTION -->
+            <div class="flex flex-col items-center">
+
+                <label class="text-sm text-gray-500 mb-3">
+                    Profilna slika
+                </label>
+
+                <label for="avatarInput" class="relative cursor-pointer group">
+
+                    {% if request.user.profile.avatar %}
+                        <img id="avatarPreview"
+                             src="{{ request.user.profile.avatar.url }}"
+                             class="w-28 h-28 rounded-full object-cover border border-black/10 group-hover:opacity-80 transition">
+                    {% else %}
+                        <div id="avatarPreview"
+                             class="w-28 h-28 rounded-full bg-[#c2410c] text-white flex items-center justify-center text-3xl font-bold group-hover:opacity-80 transition">
+                            {{ request.user.username|first|upper }}
+                        </div>
+                    {% endif %}
+
+                    <!-- overlay hint -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <span class="text-xs bg-black/70 text-white px-3 py-1 rounded-full">
+                            Promeni
+                        </span>
+                    </div>
+
+                </label>
+
+                <input id="avatarInput" type="file" name="avatar" class="hidden">
+            </div>
+
+            <!-- USERNAME -->
+            <div>
+
+                <label class="text-sm text-gray-500 mb-2 block">
+                    Username
+                </label>
+
+                <input type="text"
+                       name="username"
+                       value="{{ request.user.username }}"
+                       class="w-full px-4 py-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#c2410c]">
+
+                <p class="text-xs text-gray-400 mt-2">
+                    Ovo je tvoje javno ime koje drugi vide.
+                </p>
+
+            </div>
+
+            <!-- EMAIL (locked) -->
+            <div>
+
+                <label class="text-sm text-gray-500 mb-2 block">
+                    Email (ne može se menjati)
+                </label>
+
+                <input value="{{ request.user.email }}" disabled
+                       class="w-full px-4 py-3 rounded-xl border border-black/10 bg-gray-100 text-gray-500">
+
+            </div>
+
+            <!-- BUTTON -->
+            <button type="submit"
+                    class="w-full py-3 rounded-xl bg-[#c2410c] text-white font-bold hover:bg-[#9a3412] transition">
+
+                Sačuvaj izmene
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- PREVIEW -->
+<script>
+const input = document.getElementById("avatarInput");
+const preview = document.getElementById("avatarPreview");
+
+input?.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        if (preview.tagName.toLowerCase() === "img") {
+            preview.src = e.target.result;
+        } else {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.className = "w-28 h-28 rounded-full object-cover border border-black/10";
+            img.id = "avatarPreview";
+
+            preview.replaceWith(img);
+        }
+    };
+
+    reader.readAsDataURL(file);
+});
+</script>
+
+{% endblock %}

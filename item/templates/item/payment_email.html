@@ -1,0 +1,23 @@
+{% load price_format %}
+
+<div style="max-width:600px;margin:auto;font-family:Arial;background:#0b0b0b;color:#fff;padding:30px;border-radius:16px">
+
+    <h1 style="color:#c2410c;margin-bottom:20px;">
+        Potvrda kupovine
+    </h1>
+
+    <div style="background:#151515;padding:20px;border-radius:12px;margin-bottom:20px;">
+        <p><strong>Proizvod:</strong> {{ item.name }}</p>
+        <p><strong>ID:</strong> #{{ item.id }}</p>
+        <p><strong>Veličina:</strong> {{ size }}</p>
+        <p><strong>Cena:</strong> {{ item.price|price_format }} RSD</p>
+    </div>
+
+    <div style="background:#111;padding:20px;border-radius:12px;">
+        <h3 style="color:#c2410c;">Uplata</h3>
+        <p>Molimo izvršite uplatu na račun:</p>
+        <p><strong>160-123456-78</strong></p>
+        <p>Nakon uplate šaljemo proizvod.</p>
+    </div>
+
+</div>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <title>{% block title %}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Advent+Pro:ital,wght@0,100..900;1,100..900&family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Bungee&family=Caveat:wght@400..700&family=Chiron+GoRound+TC:wght@200..900&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Manrope:wght@200..800&family=Mozilla+Headline:wght@200..700&family=Nata+Sans:wght@100..900&family=Neucha&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Ponomar&family=Rubik+Distressed&family=Sofia+Sans+Extra+Condensed:ital,wght@0,1..1000;1,1..1000&family=Space+Grotesk:wght@300..700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Unbounded:wght@200..900&family=Vollkorn+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<script>
+  (function(d) {
+    var config = {
+      kitId: 'wfm8pgx',
+      scriptTimeout: 3000,
+      async: true
+    },
+    h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+  })(document);
+</script>
+    <style>
+
+
+        body {
+            background: #f5f1e8;
+            color: #111827;
+            font-family: "Space Grotesk", sans-serif;
+        }
+
+        /* editorial container */
+        .paper {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
+        /* retro header feel */
+        .nav {
+            background: #111827;
+            color: #f5f1e8;
+        }
+
+        /* subtle hover */
+        .card {
+            transition: all 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+        }
+
+        /* accent like old sports print */
+        .accent {
+            color: #c2410c;
+        }
+
+        .muted {
+            color: rgba(17,24,39,0.6);
+        }
+
+        /* hero image feel */
+        .hero-overlay {
+            background: linear-gradient(
+                to top,
+                rgba(0,0,0,0.55),
+                rgba(0,0,0,0.05)
+            );
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+<!-- NAV -->
+<nav class="nav border-b border-black/10 relative">
+
+    <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+
+        <!-- LOGO -->
+        <a href="/" class="text-5xl font-[Sunbeat] tracking-tight">
+            Nostalgija
+        </a>
+
+        <!-- MOBILE BUTTON -->
+        <button id="openMenu" class="md:hidden text-2xl">
+            ☰
+        </button>
+
+        <!-- DESKTOP MENU -->
+       <div class="hidden md:flex items-center gap-8 text-sm uppercase tracking-wider">
+
+            <a href="{% url 'item:items' %}" class="hover:opacity-70">
+                Prodavnica
+            </a>
+
+            {% if request.user.is_authenticated %}
+                {% if request.user.profile.can_sell %}
+                <a href="{% url 'item:new' %}" class="hover:opacity-70">
+                    Prodaj dres
+                </a>
+                {% endif %}
+                <a href="{% url 'dashboard:index' %}" class="hover:opacity-70">
+    Dashboard
+</a>
+
+                <a href="{% url 'conversation:inbox' %}" class="relative hover:opacity-70">
+                    Inbox
+                    {% if inbox_unread > 0 %}
+                        <span class="absolute -top-1 -right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+                    {% endif %}
+                </a>
+<div class="relative">
+
+    <!-- BUTTON -->
+    <button id="profileBtn"
+            class="flex items-center gap-2 hover:opacity-80 transition">
+
+        <div class="w-8 h-8 rounded-full bg-[#c2410c] text-white flex items-center justify-center font-bold">
+           {% if request.user.profile.avatar %}
+    <img src="{{ request.user.profile.avatar.url }}"
+         class="w-8 h-8 rounded-full object-cover">
+{% else %}
+    <div class="w-8 h-8 rounded-full bg-[#c2410c] text-white flex items-center justify-center font-bold ">
+        {{ request.user.username|first|upper }}
+    </div>
+{% endif %}
+        </div>
+
+        <span class="font-semibold text-sm font-['Forager'] uppercase">
+            {{ request.user.username }}
+        </span>
+
+    </button>
+
+    <!-- DROPDOWN -->
+  <div id="profileMenu"
+     class="absolute right-0 mt-3 w-56 paper rounded-2xl p-3 hidden z-50 shadow-lg">
+
+    <!-- PROFILE HEADER -->
+    <div class="flex items-center gap-3 p-3 border-b border-black/10 mb-2">
+
+       {% if request.user.profile.avatar %}
+    <img src="{{ request.user.profile.avatar.url }}"
+         class="w-8 h-8 rounded-full object-cover">
+{% else %}
+    <div class="w-8 h-8 rounded-full bg-[#c2410c] text-white flex items-center justify-center font-bold">
+        {{ request.user.username|first|upper }}
+    </div>
+{% endif %}
+
+        <div class="flex flex-col">
+            <span class="font-semibold text-sm text-gray-900">
+                {{ request.user.username }}
+            </span>
+            <span class="text-xs text-gray-500">
+                My account
+            </span>
+        </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <a href="{% url 'core:edit_profile' %}"
+       class="block px-4 py-3 rounded-xl text-gray-800 font-semibold hover:bg-black/5 transition">
+        Uredi profil
+    </a>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit"
+                class="w-full text-left px-4 py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition">
+            Logout
+        </button>
+    </form>
+
+</div>
+
+</div>
+
+            {% else %}
+
+                <a href="{% url 'core:login' %}" class="hover:opacity-70">Login</a>
+                <a href="{% url 'core:signup' %}" class="hover:opacity-70">Signup</a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- OVERLAY -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 hidden z-40 cursor-pointer"></div>
+
+   <!-- MOBILE MENU -->
+<div id="mobileMenu"
+     class="fixed top-0 right-0 w-80 h-full bg-[#111827] text-white z-50 transform translate-x-full transition duration-300 shadow-2xl">
+
+    <div class="p-6 flex justify-between items-center border-b border-white/10">
+        <h2 class="text-lg font-bold">Menu</h2>
+        <button id="closeMenu" class="text-2xl">×</button>
+    </div>
+
+    <div class="flex flex-col p-6 gap-4 text-sm uppercase tracking-wider">
+
+        <a href="{% url 'item:items' %}" class="hover:text-cyan-400">
+            Prodavnica
+        </a>
+
+        {% if request.user.is_authenticated %}
+
+            <a href="{% url 'item:new' %}" class="hover:text-cyan-400">
+                Prodaj dres
+            </a>
+            <a href="{% url 'dashboard:index' %}" class="hover:text-cyan-400">
+    Dashboard
+</a>
+
+            <a href="{% url 'conversation:inbox' %}" class="hover:text-cyan-400">
+                Inbox
+            </a>
+
+            <!-- PROFILE SECTION -->
+            <div class="mt-4 border-t border-white/10 pt-4">
+
+                <div class="flex items-center gap-3 mb-3">
+
+                    {% if request.user.profile.avatar %}
+                        <img src="{{ request.user.profile.avatar.url }}"
+                             class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    {% else %}
+                        <div class="w-10 h-10 rounded-full bg-[#c2410c] flex items-center justify-center font-bold">
+                            {{ request.user.username|first|upper }}
+                        </div>
+                    {% endif %}
+
+                    <div class="flex flex-col">
+                        <span class="font-semibold normal-case">
+                            {{ request.user.username }}
+                        </span>
+                        <span class="text-xs text-white/50 normal-case">
+                            Profil
+                        </span>
+                    </div>
+
+                </div>
+
+                <a href="{% url 'core:edit_profile' %}"
+                   class="block px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 normal-case">
+                    Uredi profil
+                </a>
+
+                <form method="post" action="{% url 'logout' %}" class="mt-2">
+                    {% csrf_token %}
+                    <button class="w-full text-left px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 normal-case">
+                        Logout
+                    </button>
+                </form>
+
+            </div>
+
+        {% else %}
+
+            <a href="{% url 'core:login' %}" class="hover:text-cyan-400">Login</a>
+            <a href="{% url 'core:signup' %}" class="font-bold text-cyan-400">Registracija</a>
+
+        {% endif %}
+
+    </div>
+</div>
+
+</nav>
+
+<script>
+
+
+window.addEventListener("pageshow", function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
+
+const openBtn = document.getElementById('openMenu');
+const closeBtn = document.getElementById('closeMenu');
+const menu = document.getElementById('mobileMenu');
+const overlay = document.getElementById('overlay');
+
+function openMenu() {
+    menu.classList.remove('translate-x-full');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMenu() {
+    menu.classList.add('translate-x-full');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+openBtn?.addEventListener('click', openMenu);
+closeBtn?.addEventListener('click', closeMenu);
+overlay?.addEventListener('click', closeMenu);
+
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+
+profileBtn?.addEventListener("click", function (e) {
+    e.stopPropagation();
+    profileMenu.classList.toggle("hidden");
+});
+
+// klik van menija zatvara
+document.addEventListener("click", function () {
+    profileMenu.classList.add("hidden");
+});
+
+
+
+
+</script>
+
+<!-- CONTENT -->
+<main class="max-w-7xl mx-auto px-6 py-10">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t border-black/10 mt-24 py-10">
+
+    <div class="max-w-7xl mx-auto px-6 flex justify-between text-sm muted">
+
+        <p>Retro football marketplace</p>
+        <p>Vintage jerseys • Collector culture</p>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

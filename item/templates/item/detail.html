@@ -1,0 +1,221 @@
+{% extends 'core/base.html' %}
+{% load price_format %}
+
+{% block title %}{{ item.name }}{% endblock %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
+
+    <!-- LEFT -->
+    <div class="lg:col-span-3 space-y-5">
+
+        <div class="paper rounded-2xl overflow-hidden bg-white">
+            <img id="mainImage"
+                 src="{% if item.images.all %}{{ item.images.first.image.url }}{% else %}{{ item.image.url }}{% endif %}"
+                 class="w-full h-[520px] object-contain p-6">
+        </div>
+
+        {% if item.images.all %}
+        <div class="grid grid-cols-4 gap-3">
+            {% for img in item.images.all %}
+            <div class="border rounded-xl overflow-hidden cursor-pointer">
+                <img src="{{ img.image.url }}"
+                     class="w-full h-24 object-cover"
+                     onclick="changeImage(this)">
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="lg:col-span-2">
+
+        <div class="paper rounded-2xl p-8 relative">
+
+            <h1 class="text-4xl font-black">{{ item.name }}</h1>
+
+<p class="text-xs text-gray-500 mt-1">
+    ID: #{{ item.id }}
+</p>
+
+            <p class="text-gray-600 mt-4">{{ item.description }}</p>
+
+            <div class="text-3xl font-black text-[#c2410c] mt-4">
+                {{ item.price|price_format }} RSD
+            </div>
+
+            <!-- SIZE SELECT -->
+            <div class="mt-6">
+                <label class="text-sm text-gray-500">Izaberi veličinu</label>
+
+                <div class="flex gap-2 mt-2 flex-wrap">
+                    {% for s in item.available_sizes.all %}
+                        <button type="button"
+                                class="size-btn px-4 py-2 border rounded-lg text-sm"
+                                data-size="{{ s.size }}">
+                            {{ s.size }}
+                        </button>
+                    {% endfor %}
+                </div>
+
+                <input type="hidden" id="formSize">
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-8">
+
+                <a href="{% url 'conversation:new' item.id %}"
+                   class="flex-1 px-6 py-4 bg-[#c2410c] text-white rounded-2xl text-center font-semibold">
+                    Kontaktiraj prodavca
+                </a>
+
+                <button id="buyNowBtn"
+                        class="flex-1 px-6 py-4 border-2 border-[#c2410c] text-[#c2410c] rounded-2xl font-semibold">
+                    Kupi odmah
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="buyModal"
+     class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+
+    <div class="bg-white p-8 rounded-2xl w-full max-w-md">
+
+        <h2 class="text-2xl font-bold mb-4">Kupi dres</h2>
+
+        <form id="buyForm"
+              method="post"
+              action="{% url 'item:buy_now' item.id %}">
+            {% csrf_token %}
+
+            <input type="hidden" name="size" id="formSizeInput">
+
+            <input type="email"
+                   name="email"
+                   placeholder="Vaš email"
+                   required
+                   class="w-full border rounded-xl p-3 mb-4">
+
+            <button type="submit"
+                    id="buyBtn"
+                    class="w-full bg-[#c2410c] text-white py-3 rounded-xl font-bold transition">
+                Pošalji instrukcije
+            </button>
+
+        </form>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"
+     class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-xl shadow-lg">
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+let selectedSize = null;
+
+function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.innerText = msg;
+    t.classList.remove("hidden");
+
+    setTimeout(() => t.classList.add("hidden"), 2000);
+}
+
+// IMAGE SWITCH
+function changeImage(el) {
+    document.getElementById("mainImage").src = el.src;
+}
+
+// SIZE SELECT
+
+
+document.querySelectorAll(".size-btn").forEach(btn => {
+
+    btn.addEventListener("click", function () {
+
+        // klik na već izabranu veličinu -> poništi izbor
+        if (selectedSize === this.dataset.size) {
+
+            this.classList.remove(
+                "bg-[#c2410c]",
+                "text-white",
+                "border-[#c2410c]"
+            );
+
+            selectedSize = null;
+            document.getElementById("selectedSize").value = "";
+
+            return;
+        }
+
+        // skini oznaku sa svih
+        document.querySelectorAll(".size-btn").forEach(b => {
+            b.classList.remove(
+                "bg-[#c2410c]",
+                "text-white",
+                "border-[#c2410c]"
+            );
+        });
+
+        // označi novu
+        this.classList.add(
+            "bg-[#c2410c]",
+            "text-white",
+            "border-[#c2410c]"
+        );
+
+        selectedSize = this.dataset.size;
+        document.getElementById("selectedSize").value = selectedSize;
+
+    });
+
+});
+
+// MODAL
+const buyModal = document.getElementById("buyModal");
+document.getElementById("buyNowBtn").addEventListener("click", () => {
+
+    if (!selectedSize) {
+        showToast("Morate izabrati veličinu pre kupovine");
+        return;
+    }
+
+    buyModal.classList.remove("hidden");
+});
+buyModal.addEventListener("click", (e) => {
+    if (e.target === buyModal) {
+        buyModal.classList.add("hidden");
+    }
+});
+
+// SUBMIT
+document.getElementById("buyForm").addEventListener("submit", function (e) {
+
+    if (!selectedSize) {
+        e.preventDefault();
+        showToast("Izaberi veličinu");
+        return;
+    }
+
+    const btn = document.getElementById("buyBtn");
+
+    btn.disabled = true;
+    btn.innerHTML = "Šalje se...";
+
+});
+
+</script>
+
+{% endblock %}

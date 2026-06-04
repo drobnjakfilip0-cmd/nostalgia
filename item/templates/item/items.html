@@ -1,0 +1,234 @@
+{% extends 'core/base.html' %}
+{% load price_format %}
+{% block title %}Items{% endblock %}
+
+{% block content %}
+
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+
+    <!-- SIDEBAR -->
+    <aside class="lg:col-span-1 space-y-8">
+
+        <div class="paper rounded-2xl p-6">
+
+            <h2 class="text-lg font-black mb-5">
+                Pretraga kataloga
+            </h2>
+
+            <form method="get" action="{% url 'item:items' %}" class="space-y-4">
+
+                <input
+                    name="query"
+                    value="{{ query }}"
+                    placeholder="Traži dres, klub, sezonu..."
+                    class="w-full px-4 py-3 rounded-xl border border-black/10 bg-white focus:outline-none focus:ring-2 focus:ring-[#c2410c]"
+                >
+
+                <button
+                    class="w-full py-3 rounded-xl bg-[#c2410c] text-white font-bold hover:bg-[#9a3412] transition">
+
+                    Pretraži
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="paper rounded-2xl p-6">
+
+            <h2 class="text-lg font-black mb-5">
+                Kategorije
+            </h2>
+
+            <ul class="space-y-2">
+
+                {% for category in categories %}
+
+                    <li>
+
+                        <a href="{% url 'item:items' %}?query={{ query }}&category={{ category.id }}"
+
+                           class="block px-4 py-3 rounded-xl transition border border-transparent
+                           {% if category.id == category_id %}
+                               bg-[#c2410c] text-white font-bold
+                           {% else %}
+                               hover:bg-black/5 text-gray-700
+                           {% endif %}">
+
+                            {{ category.name }}
+
+                        </a>
+
+                    </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="paper rounded-2xl p-6">
+
+            <h2 class="text-lg font-black mb-5">
+                Filteri
+            </h2>
+
+            <a href="{% url 'item:items' %}"
+               class="block text-center py-3 rounded-xl bg-black text-white font-bold hover:opacity-90 transition">
+
+                Resetuj filtere
+
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="lg:col-span-3">
+
+        <div class="flex items-center justify-between mb-8">
+
+            <h1 class="text-3xl font-black">
+                Katalog dresova
+            </h1>
+
+            <p class="text-gray-500">
+                {{ items|length }} artikala
+            </p>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+
+            {% for item in items %}
+
+                <div class="relative">
+
+                 <a href="{% url 'item:favorite' item.id %}"
+   class="absolute top-3 right-3 z-20">
+
+    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur border border-black/10 shadow-sm hover:scale-110 transition">
+
+        {% if request.user in item.favorites.all %}
+          <svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     class="w-5 h-5 text-red-500"
+     fill="currentColor">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+             2 5.42 4.42 3 7.5 3
+             c1.74 0 3.41 0.81 4.5 2.09
+             C13.09 3.81 14.76 3 16.5 3
+             19.58 3 22 5.42 22 8.5
+             c0 3.78-3.4 6.86-8.55 11.54
+             L12 21.35z"/>
+</svg>
+        {% else %}
+           <svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 24 24"
+     class="w-5 h-5 text-gray-600 hover:text-red-500 transition"
+     fill="none"
+     stroke="currentColor"
+     stroke-width="2"
+     stroke-linecap="round"
+     stroke-linejoin="round">
+     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+             2 5.42 4.42 3 7.5 3
+             c1.74 0 3.41 0.81 4.5 2.09
+             C13.09 3.81 14.76 3 16.5 3
+             19.58 3 22 5.42 22 8.5
+             c0 3.78-3.4 6.86-8.55 11.54
+             L12 21.35z"/>
+</svg>
+        {% endif %}
+
+    </div>
+
+</a>
+
+                    <!-- CARD -->
+                    <a href="{% url 'item:detail' item.id %}"
+                       class="paper rounded-2xl overflow-hidden group hover:-translate-y-1 transition block">
+
+                        <div class="overflow-hidden">
+
+                            <img src="{{ item.image.url }}"
+                                 class="w-full h-64 object-cover group-hover:scale-105 transition duration-500">
+
+                        </div>
+
+                        <div class="p-6">
+
+                            <h2 class="text-lg font-bold mb-2 group-hover:text-[#c2410c] transition">
+                                {{ item.name }}
+                            </h2>
+
+                         <p class="text-gray-500 text-sm mb-3">
+    Retro football item
+</p>
+
+<!-- SELLER -->
+<div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
+
+   {% if item.created_by.profile.avatar %}
+    <img src="{{ item.created_by.profile.avatar.url }}"
+         class="w-6 h-6 rounded-full object-cover inline-block mr-1">
+{% else %}
+    <span class="inline-block w-6 h-6 rounded-full bg-[#c2410c] text-white text-xs text-center leading-6 mr-1">
+        {{ item.created_by.username|first|upper }}
+    </span>
+{% endif %}
+
+<span class="font-semibold text-[#c2410c] bg-[#c2410c]/10 px-2 py-1 rounded-lg tracking-wide">
+    {{ item.created_by.username }}
+</span>
+</span>
+</div>
+
+<!-- PRICE -->
+<div class="mt-4 font-black text-[#c2410c] text-lg">
+    {{ item.price|price_format }} RSD
+</div>
+                            
+                        </div>
+
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% if items.paginator.num_pages > 1 %}
+        <div class="mt-12 flex items-center justify-center">
+    <div class="flex items-center gap-3 bg-white border border-black/10 rounded-2xl px-4 py-3 shadow-sm">
+
+        {% if items.has_previous %}
+            <a href="?page={{ items.previous_page_number }}&query={{ query }}&category={{ category_id }}"
+               class="px-3 py-2 rounded-xl hover:bg-black/5 transition text-gray-600">
+                ←
+            </a>
+        {% endif %}
+
+        <div class="px-4 py-2 text-sm font-semibold text-gray-700">
+            {{ items.number }} <span class="text-gray-400">/</span> {{ items.paginator.num_pages }}
+        </div>
+
+        {% if items.has_next %}
+            <a href="?page={{ items.next_page_number }}&query={{ query }}&category={{ category_id }}"
+               class="px-3 py-2 rounded-xl hover:bg-black/5 transition text-gray-600">
+                →
+            </a>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}
+    </main>
+
+</div>
+
+{% endblock %}
