@@ -119,10 +119,11 @@
         {% for checkbox in form.sizes %}
         <label class="cursor-pointer">
 
-            <input type="checkbox"
-                   name="{{ checkbox.name }}"
-                   value="{{ checkbox.choice_value }}"
-                   class="hidden peer">
+          <input type="checkbox"
+       name="{{ checkbox.data.name }}"
+       value="{{ checkbox.data.value }}"
+       {% if checkbox.data.selected %}checked{% endif %}
+       class="hidden peer">
 
             <div class="px-4 py-2 rounded-xl border border-black/10
                         text-sm font-medium bg-white
@@ -131,7 +132,7 @@
                         peer-checked:border-[#c2410c]
                         hover:border-[#c2410c]
                         transition">
-                {{ checkbox.choice_label }}
+                {{ checkbox.data.label }}
             </div>
 
         </label>

@@ -93,6 +93,60 @@
 
     </div>
 
+    <!-- DANGER ZONE -->
+    <div class="paper rounded-2xl p-8 mt-6 border border-red-200">
+
+        <h2 class="text-lg font-black text-red-600 mb-1">Danger Zone</h2>
+
+        <p class="text-sm text-gray-500 mb-5">
+            Deaktivacijom naloga tvoj profil postaje nevidljiv i više se nećeš moći prijaviti.
+            Tvoj email postaje slobodan za novu registraciju.
+        </p>
+
+        <button type="button"
+                onclick="document.getElementById('deactivateModal').classList.remove('hidden')"
+                class="px-5 py-2.5 rounded-xl border-2 border-red-500 text-red-500 text-sm font-bold
+                       hover:bg-red-500 hover:text-white transition active:scale-95">
+            Deaktiviraj nalog
+        </button>
+
+    </div>
+
+</div>
+
+<!-- DEACTIVATE CONFIRM MODAL -->
+<div id="deactivateModal"
+     class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+
+    <div class="paper rounded-2xl p-8 w-full max-w-md mx-4">
+
+        <h2 class="text-xl font-black mb-2">Sigurno želiš da deaktiviraš nalog?</h2>
+
+        <p class="text-sm text-gray-500 mb-6">
+            Ova akcija je trajna. Nećeš se moći prijaviti ovim nalogom.
+            Tvoj email <strong>{{ request.user.email }}</strong> postaje slobodan za novu registraciju.
+        </p>
+
+        <div class="flex gap-3">
+
+            <button type="button"
+                    onclick="document.getElementById('deactivateModal').classList.add('hidden')"
+                    class="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-semibold transition">
+                Otkaži
+            </button>
+
+            <form method="post" action="{% url 'core:deactivate_account' %}" class="flex-1">
+                {% csrf_token %}
+                <button type="submit"
+                        class="w-full py-3 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-bold transition active:scale-95">
+                    Da, deaktiviraj
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+
 </div>
 
 <!-- PREVIEW -->

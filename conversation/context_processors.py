@@ -1,31 +1,33 @@
+from django.db.models import F, Max, OuterRef, Q, Subquery
+
 from .models import Conversation, ConversationMember
+
 
 def inbox_badge(request):
     if not request.user.is_authenticated:
         return {'inbox_unread': 0}
 
-    conversations = Conversation.objects.filter(members=request.user)
-
-    unread = 0
-
-    for c in conversations:
-        last_msg = c.messages.order_by('-created_at').first()
-
-        if not last_msg:
-            continue
-
-        member = ConversationMember.objects.filter(
+    user_last_seen = Subquery(
+        ConversationMember.objects.filter(
+            conversation=OuterRef('pk'),
             user=request.user,
-            conversation=c
-        ).first()
+        ).values('last_seen')[:1]
+    )
 
-        # ako ne postoji member → unread
-        if not member or not member.last_seen:
-            unread += 1
-            continue
-
-        # ako ima novih poruka → unread
-        if last_msg.created_at > member.last_seen:
-            unread += 1
+    unread = (
+        Conversation.objects.filter(
+            conversationmember__user=request.user,
+            conversationmember__is_deleted=False,
+        )
+        .annotate(
+            last_message_at=Max('messages__created_at'),
+            user_last_seen=user_last_seen,
+        )
+        .filter(
+            Q(last_message_at__isnull=False)
+            & (Q(user_last_seen__isnull=True) | Q(last_message_at__gt=F('user_last_seen')))
+        )
+        .count()
+    )
 
     return {'inbox_unread': unread}

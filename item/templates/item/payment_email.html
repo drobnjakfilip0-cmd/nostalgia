@@ -1,23 +1,127 @@
 {% load price_format %}
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f5f1e8;font-family:'Helvetica Neue',Arial,sans-serif;">
 
-<div style="max-width:600px;margin:auto;font-family:Arial;background:#0b0b0b;color:#fff;padding:30px;border-radius:16px">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f1e8;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
-    <h1 style="color:#c2410c;margin-bottom:20px;">
-        Potvrda kupovine
-    </h1>
+          <!-- HEADER -->
+          <tr>
+            <td style="background-color:#111827;border-radius:16px 16px 0 0;padding:36px 40px;text-align:center;">
+              <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.5);">
+                Retro Football Marketplace
+              </p>
+              <h1 style="margin:0;font-size:32px;font-weight:900;color:#ffffff;letter-spacing:-0.5px;">
+                Nostalgija
+              </h1>
+            </td>
+          </tr>
 
-    <div style="background:#151515;padding:20px;border-radius:12px;margin-bottom:20px;">
-        <p><strong>Proizvod:</strong> {{ item.name }}</p>
-        <p><strong>ID:</strong> #{{ item.id }}</p>
-        <p><strong>Veličina:</strong> {{ size }}</p>
-        <p><strong>Cena:</strong> {{ item.price|price_format }} RSD</p>
-    </div>
+          <!-- ORANGE STRIPE -->
+          <tr>
+            <td style="background-color:#c2410c;padding:14px 40px;">
+              <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#ffffff;">
+                ✓ &nbsp;Potvrda kupovine
+              </p>
+            </td>
+          </tr>
 
-    <div style="background:#111;padding:20px;border-radius:12px;">
-        <h3 style="color:#c2410c;">Uplata</h3>
-        <p>Molimo izvršite uplatu na račun:</p>
-        <p><strong>160-123456-78</strong></p>
-        <p>Nakon uplate šaljemo proizvod.</p>
-    </div>
+          <!-- BODY -->
+          <tr>
+            <td style="background-color:#ffffff;padding:40px;">
 
-</div>
+              <p style="margin:0 0 24px 0;font-size:15px;color:#374151;line-height:1.6;">
+                Hvala na kupovini! Vaša porudžbina je primljena. Ispod su detalji kupovine.
+              </p>
+
+              <!-- ITEM CARD -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f9f9f9;border:1px solid #e5e7eb;border-radius:12px;margin-bottom:28px;overflow:hidden;">
+                <tr>
+                  <td style="padding:24px;">
+                    <p style="margin:0 0 4px 0;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#9ca3af;">Proizvod</p>
+                    <p style="margin:0 0 20px 0;font-size:20px;font-weight:900;color:#111827;">{{ item.name }}</p>
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e5e7eb;">
+                          <span style="font-size:13px;color:#6b7280;">ID artikla</span>
+                        </td>
+                        <td style="padding:10px 0;border-top:1px solid #e5e7eb;text-align:right;">
+                          <span style="font-size:13px;font-weight:700;color:#111827;">#{{ item.id }}</span>
+                        </td>
+                      </tr>
+                      {% if size %}
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e5e7eb;">
+                          <span style="font-size:13px;color:#6b7280;">Veličina</span>
+                        </td>
+                        <td style="padding:10px 0;border-top:1px solid #e5e7eb;text-align:right;">
+                          <span style="display:inline-block;background:#111827;color:#ffffff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;">{{ size }}</span>
+                        </td>
+                      </tr>
+                      {% endif %}
+                      <tr>
+                        <td style="padding:10px 0;border-top:1px solid #e5e7eb;">
+                          <span style="font-size:13px;color:#6b7280;">Cena</span>
+                        </td>
+                        <td style="padding:10px 0;border-top:1px solid #e5e7eb;text-align:right;">
+                          <span style="font-size:18px;font-weight:900;color:#c2410c;">{{ item.price|price_format }} RSD</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- PAYMENT INFO -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fff7ed;border:1px solid #fed7aa;border-radius:12px;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:24px;">
+                    <p style="margin:0 0 12px 0;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#c2410c;">
+                      Instrukcije za uplatu
+                    </p>
+                    <p style="margin:0 0 8px 0;font-size:14px;color:#374151;line-height:1.6;">
+                      Molimo izvršite uplatu na sledeći račun:
+                    </p>
+                    <p style="margin:0 0 4px 0;font-size:22px;font-weight:900;color:#111827;letter-spacing:1px;">
+                      160-123456-78
+                    </p>
+                    <p style="margin:12px 0 0 0;font-size:13px;color:#6b7280;line-height:1.6;">
+                      Nakon potvrde uplate, proizvod šaljemo u roku od 1–2 radna dana.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- NOTE -->
+              <p style="margin:0;font-size:13px;color:#9ca3af;line-height:1.6;text-align:center;">
+                Imate pitanje? Kontaktirajte prodavca direktno putem inboxa na platformi.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td style="background-color:#111827;border-radius:0 0 16px 16px;padding:28px 40px;text-align:center;">
+              <p style="margin:0 0 4px 0;font-size:13px;font-weight:700;color:#ffffff;">Nostalgija</p>
+              <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.4);">
+                Retro football jerseys · Vintage collector culture
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

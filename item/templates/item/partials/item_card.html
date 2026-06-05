@@ -3,8 +3,11 @@
 <a href="{% url 'item:detail' item.id %}"
    class="paper rounded-2xl overflow-hidden hover:-translate-y-1 transition block">
 
-    <img src="{{ item.image.url }}"
-         class="w-full h-64 object-cover">
+    {% if item.image %}
+        <img src="{{ item.image.url }}" class="w-full h-64 object-cover">
+    {% else %}
+        <div class="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">No image</div>
+    {% endif %}
 
     <div class="p-5">
 

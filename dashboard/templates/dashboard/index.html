@@ -1,119 +1,122 @@
 {% extends 'core/base.html' %}
-
 {% load price_format %}
 
-{% block title %} Dashboard {% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 
 <!-- MY ITEMS -->
 <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
 
-    <h2 class="mb-12 text-2xl text-center font-bold">My Items</h2>
+    <div class="flex items-center justify-between mb-12">
+        <h2 class="text-2xl font-bold">My Items</h2>
+        {% if request.user.profile.can_sell %}
+        <a href="{% url 'item:new' %}"
+           class="px-5 py-2 bg-[#c2410c] text-white font-bold rounded-xl hover:bg-[#9a3412] transition text-sm">
+            + Dodaj dres
+        </a>
+        {% endif %}
+    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {% for item in items %}
 
-            <a href="{% url 'item:detail' item.id %}"
-               class="group glass rounded-2xl overflow-hidden block">
+            <div class="group bg-white rounded-2xl overflow-hidden shadow-sm">
 
-                <div class="aspect-[3/4] overflow-hidden">
-                    <img src="{{ item.image.url }}"
-                         class="w-full h-full object-cover group-hover:scale-105 transition">
-                </div>
-
-                <div class="p-5">
-
-                    <h3 class="font-bold text-lg group-hover:text-cyan-400">
-                        {{ item.name }}
-                    </h3>
-
-                    <p class="text-slate-500 text-sm">
-                        {{ item.category }}
-                    </p>
-
-                    <div class="mt-3 font-bold text-cyan-400">
-                       {{ item.price|price_format }} RSD
+                <a href="{% url 'item:detail' item.id %}" class="block">
+                    <div class="aspect-[3/4] overflow-hidden">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition">
+                        {% else %}
+                            <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-sm min-h-[200px]">
+                                No image
+                            </div>
+                        {% endif %}
                     </div>
 
+                    <div class="p-5">
+                        <h3 class="font-bold text-lg group-hover:text-[#c2410c] transition">
+                            {{ item.name }}
+                        </h3>
+                        <p class="text-slate-500 text-sm">{{ item.category }}</p>
+                        <div class="mt-3 font-bold text-[#c2410c]">
+                            {{ item.price|price_format }} RSD
+                        </div>
+                    </div>
+                </a>
+
+                <!-- EDIT / DELETE ACTIONS -->
+                <div class="flex gap-2 px-5 pb-5">
+                    <a href="{% url 'item:edit' item.id %}"
+                       class="flex-1 text-center px-3 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-semibold
+                              transition hover:bg-[#c2410c] hover:text-white hover:shadow-md active:scale-95">
+                        ✏️ Uredi
+                    </a>
+                    <form method="post" action="{% url 'item:delete' item.id %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                onclick="return confirm('Obrisati ovaj dres?')"
+                                class="px-3 py-2 rounded-xl bg-red-50 text-red-500 text-sm font-semibold
+                                       transition hover:bg-red-500 hover:text-white hover:shadow-md active:scale-95">
+                            🗑 Obriši
+                        </button>
+                    </form>
                 </div>
 
-            </a>
+            </div>
 
+        {% empty %}
+            <p class="text-gray-500 col-span-3">Nemaš još nijedan dres.</p>
         {% endfor %}
 
     </div>
 
 </div>
 
+<!-- FAVORITES -->
 <div class="mt-10 px-6 py-12 paper rounded-2xl">
-    <h2 class="mb-8 text-2xl text-center font-black">
-        Favorites
-    </h2>
+    <h2 class="mb-8 text-2xl text-center font-black">Favorites</h2>
 
     {% if favorites %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
             {% for item in favorites %}
-
                 <a href="{% url 'item:detail' item.id %}"
                    class="paper rounded-2xl overflow-hidden group hover:-translate-y-1 transition">
-
                     <div class="overflow-hidden">
-                        <img src="{{ item.image.url }}"
-                             class="w-full h-64 object-cover group-hover:scale-105 transition">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}"
+                                 class="w-full h-64 object-cover group-hover:scale-105 transition">
+                        {% else %}
+                            <div class="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                                No image
+                            </div>
+                        {% endif %}
                     </div>
-
                     <div class="p-5">
-
-                        <h3 class="font-bold text-lg group-hover:text-[#c2410c]">
-                            {{ item.name }}
-                        </h3>
-
-                        <div class="mt-2 font-black text-[#c2410c]">
-                            {{ item.price|price_format }} RSD
-                        </div>
-
+                        <h3 class="font-bold text-lg group-hover:text-[#c2410c]">{{ item.name }}</h3>
+                        <div class="mt-2 font-black text-[#c2410c]">{{ item.price|price_format }} RSD</div>
                     </div>
-
                 </a>
-
             {% endfor %}
-
         </div>
     {% else %}
-        <p class="text-center text-gray-500">
-            Nema sačuvanih dresova.
-        </p>
+        <p class="text-center text-gray-500">Nema sačuvanih dresova.</p>
     {% endif %}
 </div>
 
 <!-- CATEGORIES -->
 <div class="mt-10 px-6 py-12 bg-gray-100 rounded-xl">
-
     <h2 class="mb-12 text-2xl text-center font-bold">Categories</h2>
-
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
         {% for category in categories %}
-
             <div class="bg-white rounded-xl p-6 shadow-sm">
-
-                <h2 class="text-xl font-bold">
-                    {{ category.name }}
-                </h2>
-
-                <p class="text-gray-500 mt-2">
-                    {{ category.items.count }} items
-                </p>
-
+                <h2 class="text-xl font-bold">{{ category.name }}</h2>
+                <p class="text-gray-500 mt-2">{{ category.item_count }} items</p>
             </div>
-
         {% endfor %}
-
     </div>
-
 </div>
 
 {% endblock %}

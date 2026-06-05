@@ -92,13 +92,27 @@
 
         <!-- DESKTOP MENU -->
        <div class="hidden md:flex items-center gap-8 text-sm uppercase tracking-wider">
+         {% if request.user.is_staff %}
+                <a href="{% url 'dashboard:users' %}"
+                   class="px-3 py-1 rounded-full text-xs font-bold hover:opacity-80 transition"
+                   style="background:#7c3aed;color:#fff;">
+                    Admin
+                </a>
+                {% elif request.user.profile.can_sell %}
+                <span class="px-3 py-1 rounded-full text-xs font-bold"
+                      style="background:#c2410c;color:#fff;">
+                    Seller
+                </span>
+                {% endif %}
 
             <a href="{% url 'item:items' %}" class="hover:opacity-70">
                 Prodavnica
             </a>
 
             {% if request.user.is_authenticated %}
-                {% if request.user.profile.can_sell %}
+               
+
+                {% if request.user.profile.can_sell or request.user.is_staff %}
                 <a href="{% url 'item:new' %}" class="hover:opacity-70">
                     Prodaj dres
                 </a>
@@ -135,6 +149,7 @@
         </span>
 
     </button>
+    
 
     <!-- DROPDOWN -->
   <div id="profileMenu"

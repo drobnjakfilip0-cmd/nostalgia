@@ -1,4 +1,25 @@
 from django.contrib import admin
-from core.models import Profile
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
 
-admin.site.register(Profile)
+from .models import Profile
+
+
+class ProfileInline(admin.StackedInline):
+    model  = Profile
+    extra  = 0
+    fields = ('avatar', 'can_sell')
+
+
+class UserAdmin(BaseUserAdmin):
+    inlines     = (ProfileInline,)
+    list_display = ('username', 'email', 'get_role', 'is_staff', 'date_joined')
+    list_filter  = ('is_staff', 'profile__can_sell')
+
+    @admin.display(description='Role')
+    def get_role(self, obj):
+        return obj.profile.role_display if hasattr(obj, 'profile') else '—'
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)

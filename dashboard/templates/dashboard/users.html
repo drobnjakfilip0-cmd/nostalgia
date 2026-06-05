@@ -1,0 +1,117 @@
+{% extends 'core/base.html' %}
+{% block title %}User Management{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto space-y-8">
+
+    <!-- HEADER -->
+    <div class="paper rounded-2xl p-8">
+        <h1 class="text-3xl font-black">User Management</h1>
+        <p class="text-gray-500 mt-1">Upravljaj korisnicima i njihovim ulogama.</p>
+    </div>
+
+    <!-- ROLE FILTER -->
+    <div class="flex gap-3 flex-wrap">
+        {% for label, value in filter_options %}
+        <a href="?role={{ value }}"
+           class="px-4 py-2 rounded-xl text-sm font-semibold border transition
+                  {% if role_filter == value %}
+                      bg-[#c2410c] text-white border-[#c2410c]
+                  {% else %}
+                      bg-white text-gray-600 border-gray-200 hover:border-[#c2410c] hover:text-[#c2410c]
+                  {% endif %}">
+            {{ label }}
+        </a>
+        {% endfor %}
+        {% if role_filter %}
+        <a href="?" class="px-4 py-2 rounded-xl text-sm font-semibold border border-gray-200 text-gray-400 hover:text-gray-700 transition">
+            × Clear
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- USER LIST -->
+    <div class="space-y-3">
+        {% for u in all_users %}
+        <div class="paper rounded-2xl p-5 flex items-center gap-4">
+
+            <!-- AVATAR -->
+            {% if u.profile.avatar %}
+                <img src="{{ u.profile.avatar.url }}"
+                     class="w-12 h-12 rounded-full object-cover flex-shrink-0">
+            {% else %}
+                <div class="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-sm"
+                     style="background-color:
+                        {% if u.is_staff %}#7c3aed{% elif u.profile.can_sell %}#c2410c{% else %}#374151{% endif %}">
+                    {{ u.username|first|upper }}
+                </div>
+            {% endif %}
+
+            <!-- INFO -->
+            <div class="flex-1 min-w-0">
+                <p class="font-bold truncate">{{ u.username }}</p>
+                <p class="text-sm text-gray-400 truncate">{{ u.email }}</p>
+            </div>
+
+            <!-- ROLE BADGE -->
+            <span class="px-3 py-1 rounded-full text-xs font-bold text-white flex-shrink-0"
+                  style="background-color:
+                    {% if u.is_staff %}#7c3aed{% elif u.profile.can_sell %}#c2410c{% else %}#374151{% endif %}">
+                {{ u.profile.role_display }}
+            </span>
+
+            <!-- ROLE CHANGE — don't allow changing own role -->
+            {% if u != request.user %}
+            <form method="post" action="{% url 'dashboard:set_user_role' u.id %}" class="flex gap-2 flex-shrink-0">
+                {% csrf_token %}
+                {% if not u.is_staff and not u.profile.can_sell %}
+                    <button name="role" value="seller"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#c2410c]/10 text-[#c2410c]
+                                   hover:bg-[#c2410c] hover:text-white transition">
+                        → Seller
+                    </button>
+                    <button name="role" value="admin"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 text-purple-600
+                                   hover:bg-purple-600 hover:text-white transition">
+                        → Admin
+                    </button>
+                {% elif u.profile.can_sell and not u.is_staff %}
+                    <button name="role" value="buyer"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600
+                                   hover:bg-gray-600 hover:text-white transition">
+                        → Buyer
+                    </button>
+                    <button name="role" value="admin"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-50 text-purple-600
+                                   hover:bg-purple-600 hover:text-white transition">
+                        → Admin
+                    </button>
+                {% elif u.is_staff %}
+                    <button name="role" value="seller"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#c2410c]/10 text-[#c2410c]
+                                   hover:bg-[#c2410c] hover:text-white transition">
+                        → Seller
+                    </button>
+                    <button name="role" value="buyer"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600
+                                   hover:bg-gray-600 hover:text-white transition">
+                        → Buyer
+                    </button>
+                {% endif %}
+            </form>
+            {% else %}
+                <span class="text-xs text-gray-400 flex-shrink-0">You</span>
+            {% endif %}
+
+        </div>
+        {% empty %}
+        <div class="paper rounded-2xl p-6 text-gray-400 text-center">
+            Nema korisnika za ovaj filter.
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}
