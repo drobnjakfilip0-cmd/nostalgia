@@ -8,12 +8,13 @@ INPUT_CLASSES = (
 )
 
 SIZE_CHOICES = [
-    ('XS', 'XS'), ('S', 'S'), ('M', 'M'),
-    ('L', 'L'), ('XL', 'XL'), ('XXL', 'XXL'),
+    ("XS", "XS"), ("S", "S"), ("M", "M"),
+    ("L", "L"), ("XL", "XL"), ("XXL", "XXL"),
 ]
 
 
 class NewItemForm(forms.ModelForm):
+
     sizes = forms.MultipleChoiceField(
         choices=SIZE_CHOICES,
         widget=forms.CheckboxSelectMultiple,
@@ -31,13 +32,19 @@ class NewItemForm(forms.ModelForm):
             'image':       forms.FileInput(attrs={'class': INPUT_CLASSES}),
         }
 
-class EditItemForm(forms.ModelForm):
-    sizes = forms.MultipleChoiceField(
-        choices=SIZE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-        required=False,
-    )
+    def save(self, commit=True):
+        item  = super().save(commit)
+        sizes = self.cleaned_data.get('sizes')
 
+        if sizes:
+            ItemSize.objects.bulk_create([
+                ItemSize(item=item, size=s, stock=1) for s in sizes
+            ])
+
+        return item
+
+
+class EditItemForm(forms.ModelForm):
     class Meta:
         model  = Item
         fields = ('category', 'name', 'description', 'price', 'image', 'is_sold')
@@ -56,12 +63,3 @@ class EditItemForm(forms.ModelForm):
             'name':        'Ime',
             'price':       'Cena',
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Pre-check sizes that already exist for this item
-        if self.instance.pk:
-            self.fields['sizes'].initial = list(
-                self.instance.available_sizes.values_list('size', flat=True)
-            )
-

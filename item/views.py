@@ -178,14 +178,31 @@ def buy_now(request, pk):
 
     html_content = render_to_string(
         'item/payment_email.html',
-        {'item': item, 'size': size},
+        {'item': item, 'size': size, 'buyer_email': email},
     )
-    msg = EmailMultiAlternatives(
+
+    # 1. Buyer receives payment instructions
+    msg_buyer = EmailMultiAlternatives(
         subject=f"Kupovina potvrda - {item.name}",
         body="Kupovina potvrda",
         to=[email],
     )
-    msg.attach_alternative(html_content, 'text/html')
-    msg.send()
+    msg_buyer.attach_alternative(html_content, 'text/html')
+    msg_buyer.send()
+
+    # 2. Seller is notified that someone wants to buy
+    seller_email = item.created_by.email
+    if seller_email:
+        seller_html = render_to_string(
+            'item/seller_notification_email.html',
+            {'item': item, 'size': size, 'buyer_email': email},
+        )
+        msg_seller = EmailMultiAlternatives(
+            subject=f"Nova kupovina - {item.name}",
+            body="Neko želi da kupi tvoj dres.",
+            to=[seller_email],
+        )
+        msg_seller.attach_alternative(seller_html, 'text/html')
+        msg_seller.send()
 
     return redirect('item:detail', pk=item.id)
