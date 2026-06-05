@@ -50,6 +50,6 @@ urlpatterns = [
         name='password_reset_complete',
     ),
     path('activate/<uidb64>/<token>/', views.activate_account, name='activate'),
-    path('profile/edit/', views.edit_profile, name='edit_profile'),
-    path('profile/deactivate/', views.deactivate_account, name='deactivate_account'),
+    path('profil/uredi/', views.edit_profile, name='edit_profile'),
+    path('profil/deaktiviraj/', views.deactivate_account, name='deactivate_account'),
 ]

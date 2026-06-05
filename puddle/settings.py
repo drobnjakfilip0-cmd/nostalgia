@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ── Core ──────────────────────────────────────────────────────────────────────
 SECRET_KEY    = os.environ['SECRET_KEY']
 DEBUG         = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost, 0.0.0.0,192.168.1.91').split(',')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -17,6 +17,12 @@ LOGIN_URL             = 'core:login'
 LOGIN_REDIRECT_URL    = 'core:index'
 LOGOUT_REDIRECT_URL   = '/'
 PASSWORD_RESET_TIMEOUT = 3600
+
+# ── Session reliability ───────────────────────────────────────────────────────
+# Save the session on EVERY request so expire_date stays fresh and any DB
+# connection issue during session read is immediately visible rather than
+# silently returning an empty session that logs the user out.
+SESSION_SAVE_EVERY_REQUEST = True
 
 # ── HTTPS / Cookie security ───────────────────────────────────────────────────
 # In development (DEBUG=True) everything is OFF — plain HTTP works normally.
@@ -62,6 +68,7 @@ INSTALLED_APPS = [
 # ── Middleware ────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'core.middleware.SessionDebugMiddleware',   # ← BEFORE session: captures full response cookies
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -120,6 +127,9 @@ DATABASES = {
         'HOST':     'localhost',
         'PORT':     '5432',
         'CONN_MAX_AGE': 60,
+        # Validate connection before use — prevents stale connections from
+        # causing session read failures that look like unexpected logouts.
+        'CONN_HEALTH_CHECKS': True,
     }
 }
 
@@ -171,6 +181,30 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE     = 'UTC'
 USE_I18N      = True
 USE_TZ        = True
+
+# ── Logging (session debug) ───────────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '[%(levelname)s %(name)s] %(message)s',
+        },
+    },
+    'loggers': {
+        'puddle.auth': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
 
 # ── Static & media ────────────────────────────────────────────────────────────
 STATIC_URL  = 'static/'

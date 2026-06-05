@@ -60,7 +60,7 @@ def users(request):
         'all_users':     all_users,
         'role_filter':   role_filter,
         'filter_options': [
-            ('All', ''), ('Admin', 'admin'), ('Seller', 'seller'), ('Buyer', 'buyer')
+            ('Svi', ''), ('Admin', 'admin'), ('Prodavac', 'seller'), ('Kupac', 'buyer')
         ],
     })
 
@@ -72,25 +72,28 @@ def set_user_role(request, user_id):
         return HttpResponseForbidden()
 
     target = get_object_or_404(User, pk=user_id)
-    role   = request.POST.get('role')
 
-    if role == 'admin':
-        target.is_staff   = True
-        target.is_superuser = False
-        target.save()
-        target.profile.can_sell = True
-        target.profile.save()
-    elif role == 'seller':
-        target.is_staff   = False
-        target.is_superuser = False
-        target.save()
-        target.profile.can_sell = True
-        target.profile.save()
-    elif role == 'buyer':
-        target.is_staff   = False
-        target.is_superuser = False
-        target.save()
-        target.profile.can_sell = False
-        target.profile.save()
+    # Never allow an admin to change their own role — would lock them out
+    if target.pk == request.user.pk:
+        return redirect('dashboard:users')
+
+    role = request.POST.get('role')
+    if role not in ('admin', 'seller', 'buyer'):
+        return redirect('dashboard:users')
+
+    # Map role → (is_staff, can_sell)
+    role_map = {
+        'admin':  (True,  True),
+        'seller': (False, True),
+        'buyer':  (False, False),
+    }
+    is_staff, can_sell = role_map[role]
+
+    # Only update the two auth fields — never touch password or other sensitive fields
+    User.objects.filter(pk=target.pk).update(is_staff=is_staff, is_superuser=False)
+
+    # Ensure the profile exists before touching it, then update can_sell
+    profile, _ = Profile.objects.get_or_create(user=target)
+    Profile.objects.filter(pk=profile.pk).update(can_sell=can_sell)
 
     return redirect('dashboard:users')

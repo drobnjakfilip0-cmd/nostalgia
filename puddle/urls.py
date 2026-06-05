@@ -16,9 +16,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('', include('core.urls')),
-    path('inbox/', include('conversation.urls')),
-    path('items/', include('item.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    path('poruke/', include('conversation.urls')),
+    path('dresovi/', include('item.urls')),
+    path('moj-kutak/', include('dashboard.urls')),
 ]
 
 if settings.DEBUG:

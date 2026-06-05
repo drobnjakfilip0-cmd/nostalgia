@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="{% static 'core/manifest.json' %}">
 
     <title>{% block title %}{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +25,11 @@
 </script>
     <style>
 
+
+        @font-face {
+            font-family: 'Sunbeat';
+            src: url('/static/core/fonts/Sunbeat.woff2') format('woff2');
+        }
 
         body {
             background: #f5f1e8;
@@ -92,7 +99,9 @@
 
         <!-- DESKTOP MENU -->
        <div class="hidden md:flex items-center gap-8 text-sm uppercase tracking-wider">
-         {% if request.user.is_staff %}
+
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_staff %}
                 <a href="{% url 'dashboard:users' %}"
                    class="px-3 py-1 rounded-full text-xs font-bold hover:opacity-80 transition"
                    style="background:#7c3aed;color:#fff;">
@@ -104,6 +113,7 @@
                     Seller
                 </span>
                 {% endif %}
+            {% endif %}
 
             <a href="{% url 'item:items' %}" class="hover:opacity-70">
                 Prodavnica
@@ -118,11 +128,11 @@
                 </a>
                 {% endif %}
                 <a href="{% url 'dashboard:index' %}" class="hover:opacity-70">
-    Dashboard
+    Moj kutak
 </a>
 
                 <a href="{% url 'conversation:inbox' %}" class="relative hover:opacity-70">
-                    Inbox
+                    Poruke
                     {% if inbox_unread > 0 %}
                         <span class="absolute -top-1 -right-2 w-2 h-2 bg-red-500 rounded-full"></span>
                     {% endif %}
@@ -172,7 +182,7 @@
                 {{ request.user.username }}
             </span>
             <span class="text-xs text-gray-500">
-                My account
+                Moj nalog
             </span>
         </div>
 
@@ -188,7 +198,7 @@
         {% csrf_token %}
         <button type="submit"
                 class="w-full text-left px-4 py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition">
-            Logout
+            Odjavi se
         </button>
     </form>
 
@@ -198,8 +208,8 @@
 
             {% else %}
 
-                <a href="{% url 'core:login' %}" class="hover:opacity-70">Login</a>
-                <a href="{% url 'core:signup' %}" class="hover:opacity-70">Signup</a>
+                <a href="{% url 'core:login' %}" class="hover:opacity-70">Prijavi se</a>
+                <a href="{% url 'core:signup' %}" class="hover:opacity-70">Registracija</a>
 
             {% endif %}
 
@@ -231,11 +241,11 @@
                 Prodaj dres
             </a>
             <a href="{% url 'dashboard:index' %}" class="hover:text-cyan-400">
-    Dashboard
+    Moj kutak
 </a>
 
             <a href="{% url 'conversation:inbox' %}" class="hover:text-cyan-400">
-                Inbox
+                Poruke
             </a>
 
             <!-- PROFILE SECTION -->
@@ -271,7 +281,7 @@
                 <form method="post" action="{% url 'logout' %}" class="mt-2">
                     {% csrf_token %}
                     <button class="w-full text-left px-3 py-2 rounded-xl text-red-400 hover:bg-red-500/10 normal-case">
-                        Logout
+                        Odjavi se
                     </button>
                 </form>
 
@@ -279,7 +289,7 @@
 
         {% else %}
 
-            <a href="{% url 'core:login' %}" class="hover:text-cyan-400">Login</a>
+            <a href="{% url 'core:login' %}" class="hover:text-cyan-400">Prijavi se</a>
             <a href="{% url 'core:signup' %}" class="font-bold text-cyan-400">Registracija</a>
 
         {% endif %}
@@ -349,8 +359,8 @@ document.addEventListener("click", function () {
 
     <div class="max-w-7xl mx-auto px-6 flex justify-between text-sm muted">
 
-        <p>Retro football marketplace</p>
-        <p>Vintage jerseys • Collector culture</p>
+        <p>Retro fudbalski marketplace</p>
+        <p>Vintage dresovi • Kolekcionar kultura</p>
 
     </div>
 

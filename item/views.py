@@ -52,15 +52,15 @@ def items(request):
     })
 
 
-def detail(request, pk):
+def detail(request, slug):
     item = get_object_or_404(
         Item.objects.select_related('category', 'created_by')
                     .prefetch_related('images', 'available_sizes'),
-        pk=pk,
+        slug=slug,
     )
     related_items = (
         Item.objects.filter(category=item.category, is_sold=False)
-                    .exclude(pk=pk)
+                    .exclude(slug=slug)
                     .select_related('category', 'created_by')[:6]
     )
     # All possible sizes come from SIZE_CHOICES (single source of truth in forms.py)
@@ -81,7 +81,7 @@ def seller(request, pk):
 
 @login_required
 def new(request):
-    if not request.user.profile.can_sell:
+    if not (request.user.profile.can_sell or request.user.is_staff):
         return redirect('dashboard:index')
 
     if request.method == 'POST':
@@ -103,7 +103,7 @@ def new(request):
                 ItemImage.objects.bulk_create([
                     ItemImage(item=item, image=img) for img in images
                 ])
-            return redirect('item:detail', pk=item.id)
+            return redirect('item:detail', slug=item.slug)
     else:
         form = NewItemForm()
 
@@ -111,16 +111,12 @@ def new(request):
 
 
 @login_required
-def edit(request, pk):
-    item = get_object_or_404(Item, pk=pk, created_by=request.user)
+def edit(request, slug):
+    item = get_object_or_404(Item, slug=slug, created_by=request.user)
 
     if request.method == 'POST':
-        print("DEBUG POST sizes:", request.POST.getlist('sizes'))
         form = EditItemForm(request.POST, request.FILES, instance=item)
-        print("DEBUG form valid:", form.is_valid())
-        print("DEBUG form errors:", form.errors)
         if form.is_valid():
-            print("DEBUG cleaned sizes:", form.cleaned_data.get('sizes'))
             item = form.save()
 
             # replace sizes with the new selection
@@ -130,14 +126,13 @@ def edit(request, pk):
                 ItemSize.objects.bulk_create([
                     ItemSize(item=item, size=s, stock=1) for s in sizes
                 ])
-            print("DEBUG saved sizes:", list(item.available_sizes.values_list('size', flat=True)))
 
             images = request.FILES.getlist('images')
             if images:
                 ItemImage.objects.bulk_create([
                     ItemImage(item=item, image=img) for img in images
                 ])
-            return redirect('item:detail', pk=item.id)
+            return redirect('item:detail', slug=item.slug)
     else:
         form = EditItemForm(instance=item)
 
@@ -146,16 +141,16 @@ def edit(request, pk):
 
 @require_POST
 @login_required
-def delete(request, pk):
-    item = get_object_or_404(Item, pk=pk, created_by=request.user)
+def delete(request, slug):
+    item = get_object_or_404(Item, slug=slug, created_by=request.user)
     item.delete()
     return redirect('dashboard:index')
 
 
 @require_POST
 @login_required
-def toggle_favorite(request, pk):
-    item = get_object_or_404(Item, pk=pk)
+def toggle_favorite(request, slug):
+    item = get_object_or_404(Item, slug=slug)
     if item.favorites.filter(pk=request.user.pk).exists():
         item.favorites.remove(request.user)
     else:
@@ -164,17 +159,17 @@ def toggle_favorite(request, pk):
 
 
 @require_POST
-def buy_now(request, pk):
-    item = get_object_or_404(Item, pk=pk)
+def buy_now(request, slug):
+    item = get_object_or_404(Item, slug=slug)
 
     if item.is_sold:
-        return redirect('item:detail', pk=item.id)
+        return redirect('item:detail', slug=item.slug)
 
     email = request.POST.get('email', '').strip()
     size  = request.POST.get('size')
 
     if not email:
-        return redirect('item:detail', pk=item.id)
+        return redirect('item:detail', slug=item.slug)
 
     html_content = render_to_string(
         'item/payment_email.html',
@@ -205,4 +200,4 @@ def buy_now(request, pk):
         msg_seller.attach_alternative(seller_html, 'text/html')
         msg_seller.send()
 
-    return redirect('item:detail', pk=item.id)
+    return redirect('item:detail', slug=item.slug)

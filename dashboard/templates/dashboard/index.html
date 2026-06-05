@@ -9,7 +9,7 @@
 <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
 
     <div class="flex items-center justify-between mb-12">
-        <h2 class="text-2xl font-bold">My Items</h2>
+        <h2 class="text-2xl font-bold">Moji dresovi</h2>
         {% if request.user.profile.can_sell %}
         <a href="{% url 'item:new' %}"
            class="px-5 py-2 bg-[#c2410c] text-white font-bold rounded-xl hover:bg-[#9a3412] transition text-sm">
@@ -24,14 +24,14 @@
 
             <div class="group bg-white rounded-2xl overflow-hidden shadow-sm">
 
-                <a href="{% url 'item:detail' item.id %}" class="block">
+                <a href="{% url 'item:detail' item.slug %}" class="block">
                     <div class="aspect-[3/4] overflow-hidden">
                         {% if item.image %}
                             <img src="{{ item.image.url }}"
                                  class="w-full h-full object-cover group-hover:scale-105 transition">
                         {% else %}
                             <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-sm min-h-[200px]">
-                                No image
+                                Nema slike
                             </div>
                         {% endif %}
                     </div>
@@ -49,12 +49,12 @@
 
                 <!-- EDIT / DELETE ACTIONS -->
                 <div class="flex gap-2 px-5 pb-5">
-                    <a href="{% url 'item:edit' item.id %}"
+                    <a href="{% url 'item:edit' item.slug %}"
                        class="flex-1 text-center px-3 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-semibold
                               transition hover:bg-[#c2410c] hover:text-white hover:shadow-md active:scale-95">
                         ✏️ Uredi
                     </a>
-                    <form method="post" action="{% url 'item:delete' item.id %}">
+                    <form method="post" action="{% url 'item:delete' item.slug %}">
                         {% csrf_token %}
                         <button type="submit"
                                 onclick="return confirm('Obrisati ovaj dres?')"
@@ -77,12 +77,12 @@
 
 <!-- FAVORITES -->
 <div class="mt-10 px-6 py-12 paper rounded-2xl">
-    <h2 class="mb-8 text-2xl text-center font-black">Favorites</h2>
+    <h2 class="mb-8 text-2xl text-center font-black">Omiljeno</h2>
 
     {% if favorites %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {% for item in favorites %}
-                <a href="{% url 'item:detail' item.id %}"
+                <a href="{% url 'item:detail' item.slug %}"
                    class="paper rounded-2xl overflow-hidden group hover:-translate-y-1 transition">
                     <div class="overflow-hidden">
                         {% if item.image %}
@@ -90,7 +90,7 @@
                                  class="w-full h-64 object-cover group-hover:scale-105 transition">
                         {% else %}
                             <div class="w-full h-64 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-                                No image
+                                Nema slike
                             </div>
                         {% endif %}
                     </div>
@@ -108,12 +108,12 @@
 
 <!-- CATEGORIES -->
 <div class="mt-10 px-6 py-12 bg-gray-100 rounded-xl">
-    <h2 class="mb-12 text-2xl text-center font-bold">Categories</h2>
+    <h2 class="mb-12 text-2xl text-center font-bold">Kategorije</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for category in categories %}
             <div class="bg-white rounded-xl p-6 shadow-sm">
                 <h2 class="text-xl font-bold">{{ category.name }}</h2>
-                <p class="text-gray-500 mt-2">{{ category.item_count }} items</p>
+                <p class="text-gray-500 mt-2">{{ category.item_count }} dresova</p>
             </div>
         {% endfor %}
     </div>
