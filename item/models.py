@@ -34,6 +34,15 @@ def generate_unique_slug(name: str, instance=None) -> str:
 
     return slug
 
+from django.core.exceptions import ValidationError
+
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB
+
+def validate_image_size(image):
+    if image.size > MAX_IMAGE_SIZE:
+        raise ValidationError(
+            "Slika ne sme biti veća od 5 MB."
+        )
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -52,7 +61,7 @@ class Item(models.Model):
     slug        = models.SlugField(max_length=60, unique=True, blank=True)
     description = models.TextField(blank=True, null=True)
     price       = models.DecimalField(max_digits=10, decimal_places=0)
-    image       = models.ImageField(upload_to='item_images', blank=True, null=True)
+    image       = models.ImageField(upload_to='item_images', blank=True, null=True, validators=[validate_image_size])
     favorites   = models.ManyToManyField(User, related_name='favorite_items', blank=True)
     is_sold     = models.BooleanField(default=False, db_index=True)
     created_by  = models.ForeignKey(User, related_name='items', on_delete=models.CASCADE)
@@ -70,7 +79,7 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     item  = models.ForeignKey(Item, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='item_images')
+    image = models.ImageField(upload_to='item_images', validators=[validate_image_size])
 
     def __str__(self):
         return f"Image for {self.item.name}"

@@ -18,6 +18,9 @@ LOGIN_REDIRECT_URL    = 'core:index'
 LOGOUT_REDIRECT_URL   = '/'
 PASSWORD_RESET_TIMEOUT = 3600
 
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
 # ── Session reliability ───────────────────────────────────────────────────────
 # Save the session on EVERY request so expire_date stays fresh and any DB
 # connection issue during session read is immediately visible rather than

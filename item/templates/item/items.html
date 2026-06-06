@@ -106,15 +106,15 @@
 
                 <div class="relative">
 
-                <form method="post" action="{% url 'item:favorite' item.slug %}" class="absolute top-3 right-3 z-20">
+                <form method="post" action="{% url 'item:favorite' item.slug %}" class="absolute top-3 right-3 z-20 fav-form">
                     {% csrf_token %}
                     <button type="submit" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur border border-black/10 shadow-sm hover:scale-110 transition">
                         {% if request.user in item.favorites.all %}
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 text-red-500" fill="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fav-icon w-5 h-5 text-red-500" fill="currentColor" data-active="true">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
                         {% else %}
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 text-gray-600 hover:text-red-500 transition" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="fav-icon w-5 h-5 text-gray-600 hover:text-red-500 transition" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-active="false">
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
                         {% endif %}
@@ -207,4 +207,42 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.fav-form').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var url = form.action;
+        var csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+        var icon = form.querySelector('.fav-icon');
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrf,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.is_favorite) {
+                icon.setAttribute('fill', 'currentColor');
+                icon.removeAttribute('stroke');
+                icon.classList.remove('text-gray-600');
+                icon.classList.add('text-red-500');
+            } else {
+                icon.setAttribute('fill', 'none');
+                icon.setAttribute('stroke', 'currentColor');
+                icon.setAttribute('stroke-width', '2');
+                icon.setAttribute('stroke-linecap', 'round');
+                icon.setAttribute('stroke-linejoin', 'round');
+                icon.classList.remove('text-red-500');
+                icon.classList.add('text-gray-600');
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

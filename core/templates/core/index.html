@@ -13,10 +13,17 @@
     <div class="paper rounded-2xl overflow-hidden">
 
     <div class="relative h-[500px]">
+<picture>
+    <!-- MOBILE -->
+    <source
+        media="(max-width: 768px)"
+        srcset="{% static 'core/images/diego.jpeg' %}">
 
-    <img src="{% static 'core/images/retro1.avif' %}" alt="retro"
+    <!-- DESKTOP (default) -->
+    <img src="{% static 'core/images/retro1.avif' %}"
+         alt="retro"
          class="absolute inset-0 w-full h-full object-cover">
-
+</picture>
     <div class="absolute inset-0 bg-black/50"></div>
 
     <div class="absolute inset-0 flex items-end p-10 md:p-16 text-white">

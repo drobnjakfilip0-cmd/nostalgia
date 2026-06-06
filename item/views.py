@@ -150,11 +150,16 @@ def delete(request, slug):
 @require_POST
 @login_required
 def toggle_favorite(request, slug):
+    from django.http import JsonResponse
     item = get_object_or_404(Item, slug=slug)
     if item.favorites.filter(pk=request.user.pk).exists():
         item.favorites.remove(request.user)
+        is_favorite = False
     else:
         item.favorites.add(request.user)
+        is_favorite = True
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'is_favorite': is_favorite})
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
