@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django import forms
+
 from django.core.exceptions import ValidationError
 
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5 MB

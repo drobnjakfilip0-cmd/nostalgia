@@ -57,6 +57,73 @@
 
 </section>
 
+<!-- ═══════════════════════════════════════════════
+     PWA INSTALL BANNER  —  mobile only (hidden by default, JS reveals it)
+     ═══════════════════════════════════════════════ -->
+<div id="pwa-install-banner"
+     class="mb-10" style="display:none">
+
+    <div class="relative rounded-3xl overflow-hidden shadow-xl"
+         style="background: linear-gradient(135deg, #111827 0%, #1e1b4b 55%, #7c2d12 100%);">
+
+        <!-- subtle texture grain overlay -->
+        <div class="absolute inset-0 opacity-[0.04]"
+             style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%224%22 height=%224%22><rect width=%224%22 height=%224%22 fill=%22white%22/><rect width=%221%22 height=%221%22 fill=%22black%22/></svg>');"></div>
+
+        <!-- dismiss X -->
+        <button onclick="dismissPwaBanner()"
+                aria-label="Dismiss"
+                class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition text-white/60 hover:text-white text-sm leading-none z-10">
+            ✕
+        </button>
+
+        <div class="relative px-5 py-6 flex items-center gap-4">
+
+            <!-- App icon -->
+            <div class="flex-shrink-0 relative">
+                <img src="{% static 'core/images/icon.png' %}"
+                     alt="Nostalgija"
+                     class="w-16 h-16 rounded-2xl shadow-lg object-cover border-2 border-white/15">
+                <!-- shine -->
+                <div class="absolute inset-0 rounded-2xl"
+                     style="background: linear-gradient(135deg,rgba(255,255,255,0.25) 0%,transparent 55%);"></div>
+            </div>
+
+            <!-- Text block -->
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-0.5">
+                    <span class="text-base font-black text-white tracking-tight leading-none">Nostalgija</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/60 uppercase tracking-wide border border-white/10">App</span>
+                </div>
+                <p class="text-xs text-white/55 leading-snug mb-3">
+                    Install for faster browsing &amp; posting
+                </p>
+
+                <!-- CTA -->
+                <button onclick="handlePwaInstall()"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold
+                               bg-[#c2410c] hover:bg-[#9a3412] active:scale-95
+                               text-white shadow-lg shadow-orange-900/40
+                               transition-all duration-150">
+                    <span>📱</span> Install App
+                </button>
+            </div>
+
+            <!-- App Store stars flair -->
+            <div class="flex-shrink-0 flex flex-col items-center gap-1 self-start mt-1">
+                <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                <span class="text-white/30 text-[10px]">Free</span>
+            </div>
+
+        </div>
+
+        <!-- bottom shimmer line -->
+        <div class="h-px w-full" style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);"></div>
+
+    </div>
+</div>
+<!-- /PWA INSTALL BANNER -->
+
 <!-- NEW ITEMS -->
 <section class="mb-20">
 

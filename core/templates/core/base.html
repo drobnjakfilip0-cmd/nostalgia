@@ -75,6 +75,9 @@
                 rgba(0,0,0,0.05)
             );
         }
+
+        /* ── PWA Install ── */
+        /* modal controlled via inline style display:flex / display:none */
     </style>
 </head>
 
@@ -237,9 +240,11 @@
 
         {% if request.user.is_authenticated %}
 
+            {% if request.user.profile.can_sell or request.user.is_staff %}
             <a href="{% url 'item:new' %}" class="hover:text-cyan-400">
                 Prodaj dres
             </a>
+            {% endif %}
             <a href="{% url 'dashboard:index' %}" class="hover:text-cyan-400">
     Moj kutak
 </a>
@@ -385,6 +390,239 @@ document.addEventListener("click", function () {
     </div>
 
 </footer>
+
+<!-- ══════════════════════════════════════
+     PWA MODAL — iOS install instructions
+     ══════════════════════════════════════ -->
+<div id="pwa-modal"
+     role="dialog"
+     aria-modal="true"
+     style="display:none; position:fixed; inset:0; z-index:9999;
+            background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
+            -webkit-backdrop-filter:blur(4px);
+            display:none; align-items:flex-end; justify-content:center;
+            padding:16px;">
+
+    <div style="background:#fff; width:100%; max-width:420px; border-radius:24px;
+                overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+
+        <!-- top bar -->
+        <div style="height:4px; background:linear-gradient(90deg,#c2410c,#7c3aed,#0ea5e9);"></div>
+
+        <div style="padding:24px 24px 8px; display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="font-size:18px; font-weight:800; color:#111827; margin:0;">
+                📱 Instalacija aplikacije
+            </h2>
+            <button onclick="closePwaModal()"
+                    style="width:32px; height:32px; border:none; background:#f3f4f6;
+                           border-radius:50%; font-size:16px; cursor:pointer;
+                           display:flex; align-items:center; justify-content:center;
+                           color:#6b7280; flex-shrink:0;">
+                ✕
+            </button>
+        </div>
+
+        <div style="padding:8px 24px 24px;">
+
+            <!-- Share icon strip -->
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;
+                        background:#f9fafb; border:1px solid #e5e7eb;
+                        border-radius:16px; padding:14px 16px;">
+
+                <!-- Share icon -->
+                <div style="width:40px; height:40px; border-radius:12px; flex-shrink:0;
+                            background:#007AFF; display:flex; align-items:center; justify-content:center;">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24"
+                         stroke="white" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
+                    </svg>
+                </div>
+
+                <p style="font-size:13px; color:#374151; margin:0; line-height:1.5; flex:1;">
+                    Pronadji <strong>Share</strong> u browseru
+                </p>
+
+
+            </div>
+
+            <!-- Steps -->
+            <div style="display:flex; flex-direction:column; gap:14px;">
+
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                    <div style="width:26px; height:26px; border-radius:50%; background:#111827;
+                                color:#fff; font-size:12px; font-weight:700; flex-shrink:0;
+                                display:flex; align-items:center; justify-content:center;">1</div>
+                    <p style="font-size:14px; color:#374151; margin:0; padding-top:4px; line-height:1.45;">
+                        Klikni <strong>Share</strong> dugme
+                        <svg style="display:inline;vertical-align:middle;margin-left:2px;"
+                             width="16" height="16" fill="none" viewBox="0 0 24 24"
+                             stroke="#007AFF" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
+                        </svg>
+                      
+                    </p>
+                </div>
+
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                    <div style="width:26px; height:26px; border-radius:50%; background:#111827;
+                                color:#fff; font-size:12px; font-weight:700; flex-shrink:0;
+                                display:flex; align-items:center; justify-content:center;">2</div>
+                    <p style="font-size:14px; color:#374151; margin:0; padding-top:4px; line-height:1.45;">
+                        Klikni <strong>"Add to Home Screen"</strong>
+                    </p>
+                </div>
+
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                    <div style="width:26px; height:26px; border-radius:50%; background:#111827;
+                                color:#fff; font-size:12px; font-weight:700; flex-shrink:0;
+                                display:flex; align-items:center; justify-content:center;">3</div>
+                    <p style="font-size:14px; color:#374151; margin:0; padding-top:4px; line-height:1.45;">
+                        Klikni <strong>"Add"</strong> 
+                    </p>
+                </div>
+
+                <div style="display:flex; align-items:flex-start; gap:12px;">
+                    <div style="width:26px; height:26px; border-radius:50%; background:#c2410c;
+                                color:#fff; font-size:12px; font-weight:700; flex-shrink:0;
+                                display:flex; align-items:center; justify-content:center;">✓</div>
+                    <p style="font-size:14px; color:#374151; margin:0; padding-top:4px; line-height:1.45;">
+                        Aplikacija se pojavljuje na početnom ekranu 🎉
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Close button -->
+            <button onclick="closePwaModal()"
+                    style="margin-top:24px; width:100%; padding:14px; border:none;
+                           background:#c2410c; border-radius:16px; font-size:14px;
+                           font-weight:600; color:#ffffff; cursor:pointer;">
+               U redu
+            </button>
+
+        </div>
+    </div>
+</div>
+<!-- /PWA MODAL -->
+
+<!-- ── PWA JS ── -->
+<script>
+(function () {
+    var ua = navigator.userAgent || '';
+
+    var isIos = /iPad|iPhone|iPod/.test(ua)
+             || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    var isSafari = isIos
+                && /Safari/.test(ua)
+                && !/CriOS|FxiOS|OPiOS|EdgiOS/.test(ua);
+
+    var isStandalone = window.navigator.standalone === true
+                    || window.matchMedia('(display-mode: standalone)').matches;
+
+    var isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua)
+                || window.screen.width <= 768;
+
+    console.log('PWA: isIos=' + isIos + ' isSafari=' + isSafari
+              + ' isStandalone=' + isStandalone + ' isMobile=' + isMobile);
+
+    var deferredPrompt = null;
+    var fallbackTimer  = null;
+
+    /* ── Banner ── */
+    function getBanner() { return document.getElementById('pwa-install-banner'); }
+
+    function showBanner() {
+        var b = getBanner();
+        if (!b) { console.log('PWA: banner not found (not on homepage)'); return; }
+        b.style.display = 'block';
+        console.log('PWA: banner shown');
+    }
+
+    function hideBanner() {
+        var b = getBanner();
+        if (b) b.style.display = 'none';
+    }
+
+    /* Always hide first to prevent desktop flash */
+    hideBanner();
+
+    if (isStandalone) {
+        console.log('PWA: already installed');
+        return;
+    }
+    if (!isMobile) {
+        console.log('PWA: desktop — suppressed');
+        return;
+    }
+
+    if (isSafari) {
+        console.log('PWA: iOS Safari detected');
+        showBanner();
+    } else {
+        window.addEventListener('beforeinstallprompt', function (e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            clearTimeout(fallbackTimer);
+            console.log('PWA: install prompt available');
+            showBanner();
+        });
+        /* Fallback: show banner after 1.5s even without native prompt */
+        fallbackTimer = setTimeout(function () {
+            console.log('PWA: fallback — showing banner');
+            showBanner();
+        }, 1500);
+    }
+
+    /* ── Banner button ── */
+    window.handlePwaInstall = function () {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function (r) {
+                console.log('PWA: user choice = ' + r.outcome);
+                if (r.outcome === 'accepted') hideBanner();
+                deferredPrompt = null;
+            });
+        } else {
+            /* iOS or no native prompt — open instructions modal */
+            openPwaModal();
+        }
+    };
+
+    /* ── Dismiss banner ── */
+    window.dismissPwaBanner = function () {
+        clearTimeout(fallbackTimer);
+        hideBanner();
+    };
+
+    /* ── Modal open ── */
+    window.openPwaModal = function () {
+        var modal = document.getElementById('pwa-modal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    };
+
+    /* ── Modal close ── */
+    window.closePwaModal = function () {
+        var modal = document.getElementById('pwa-modal');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    };
+
+    /* Backdrop click closes modal */
+    document.getElementById('pwa-modal').addEventListener('click', function (e) {
+        if (e.target === this) closePwaModal();
+    });
+
+    /* Escape key */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closePwaModal();
+    });
+
+})();
+</script>
 
 {% block scripts %}{% endblock %}
 </body>

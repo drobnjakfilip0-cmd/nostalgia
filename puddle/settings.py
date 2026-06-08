@@ -69,9 +69,8 @@ INSTALLED_APPS = [
 ]
 
 # ── Middleware ────────────────────────────────────────────────────────────────
-MIDDLEWARE = [
+_base_middleware = [
     'django.middleware.security.SecurityMiddleware',
-    'core.middleware.SessionDebugMiddleware',   # ← BEFORE session: captures full response cookies
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -82,6 +81,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
 ]
+
+MIDDLEWARE = (
+    ['core.middleware.SessionDebugMiddleware'] + _base_middleware
+    if DEBUG else _base_middleware
+)
 
 # ── Authentication backends ───────────────────────────────────────────────────
 AUTHENTICATION_BACKENDS = [
@@ -124,8 +128,8 @@ WSGI_APPLICATION = 'puddle.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE':   'django.db.backends.postgresql',
-        'NAME':     'nostalgija',
-        'USER':     'duborg_t',
+        'NAME':     os.getenv('DB_NAME', 'nostalgija'),
+        'USER':     os.getenv('DB_USER', 'duborg_t'),
         'PASSWORD': os.getenv('PASSWORD_DB'),
         'HOST':     'localhost',
         'PORT':     '5432',

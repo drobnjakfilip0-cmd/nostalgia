@@ -237,34 +237,23 @@ document.querySelectorAll(".size-btn").forEach(btn => {
 
         // klik na već izabranu veličinu -> poništi izbor
         if (selectedSize === this.dataset.size) {
-
-            this.classList.remove(
-                "bg-[#c2410c]",
-                "text-white",
-                "border-[#c2410c]"
-            );
+            this.classList.remove("bg-[#c2410c]", "text-white", "border-[#c2410c]");
+            this.classList.add("hover:text-[#c2410c]", "hover:border-[#c2410c]");
 
             selectedSize = null;
             document.getElementById("selectedSize").value = "";
-
             return;
         }
 
         // skini oznaku sa svih
         document.querySelectorAll(".size-btn").forEach(b => {
-            b.classList.remove(
-                "bg-[#c2410c]",
-                "text-white",
-                "border-[#c2410c]"
-            );
+            b.classList.remove("bg-[#c2410c]", "text-white", "border-[#c2410c]");
+            b.classList.add("hover:text-[#c2410c]", "hover:border-[#c2410c]");
         });
 
-        // označi novu
-        this.classList.add(
-            "bg-[#c2410c]",
-            "text-white",
-            "border-[#c2410c]"
-        );
+        // označi novu — ukloni hover klase da tekst ne nestane pri hoveru
+        this.classList.remove("hover:text-[#c2410c]", "hover:border-[#c2410c]");
+        this.classList.add("bg-[#c2410c]", "text-white", "border-[#c2410c]");
 
         selectedSize = this.dataset.size;
         document.getElementById("selectedSize").value = selectedSize;
