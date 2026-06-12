@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block title %}429 — Previše zahteva{% endblock %}
+
+{% block content %}
+
+<div class="min-h-[70vh] flex items-center justify-center">
+
+    <div class="text-center max-w-lg mx-auto px-6">
+
+        <!-- BIG NUMBER -->
+        <p class="text-[160px] font-black leading-none text-[#c2410c] opacity-10 select-none">
+            429
+        </p>
+
+        <div class="-mt-16 relative z-10">
+
+            <!-- ICON -->
+            <div class="w-20 h-20 rounded-full bg-[#c2410c]/10 flex items-center justify-center mx-auto mb-6">
+                <span class="text-4xl">⏱️</span>
+            </div>
+
+            <h1 class="text-3xl font-black mb-3">
+                Previše zahteva
+            </h1>
+
+            <p class="text-gray-500 mb-10 leading-relaxed">
+                Detektovano je previše pokušaja u kratkom vremenskom periodu.
+                Sačekaj nekoliko minuta i pokušaj ponovo.
+            </p>
+
+            <!-- ACTIONS -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+
+                <a href="{% url 'core:index' %}"
+                   class="px-6 py-3 rounded-xl bg-[#111827] text-white font-bold
+                          hover:bg-[#c2410c] transition active:scale-95">
+                    Početna strana
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

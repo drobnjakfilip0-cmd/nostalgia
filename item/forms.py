@@ -31,6 +31,13 @@ class NewItemForm(forms.ModelForm):
             'price':       forms.NumberInput(attrs={'class': INPUT_CLASSES}),
             'image':       forms.FileInput(attrs={'class': INPUT_CLASSES}),
         }
+        labels = {
+            'category':    'Kategorija',
+            'name':        'Ime',
+            'description': 'Opis',
+            'price':       'Cena',
+            'image':       'Glavna slika',
+        }
 
     # Sizes are handled in views.py after item.save() so the item has a PK.
 

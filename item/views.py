@@ -170,16 +170,33 @@ def buy_now(request, slug):
     if item.is_sold:
         return redirect('item:detail', slug=item.slug)
 
-    email = request.POST.get('email', '').strip()
-    size  = request.POST.get('size')
+    email        = request.POST.get('email', '').strip()
+    size         = request.POST.get('size')
+    first_name   = request.POST.get('first_name', '').strip()
+    last_name    = request.POST.get('last_name', '').strip()
+    city         = request.POST.get('city', '').strip()
+    postal_code  = request.POST.get('postal_code', '').strip()
+    street        = request.POST.get('street', '').strip()
+    street_number = request.POST.get('street_number', '').strip()
+    phone         = request.POST.get('phone', '').strip()
 
     if not email:
         return redirect('item:detail', slug=item.slug)
 
-    html_content = render_to_string(
-        'item/payment_email.html',
-        {'item': item, 'size': size, 'buyer_email': email},
-    )
+    ctx = {
+        'item':          item,
+        'size':          size,
+        'buyer_email':   email,
+        'first_name':    first_name,
+        'last_name':     last_name,
+        'city':          city,
+        'postal_code':   postal_code,
+        'street':        street,
+        'street_number': street_number,
+        'phone':         phone,
+    }
+
+    html_content = render_to_string('item/payment_email.html', ctx)
 
     # 1. Buyer receives payment instructions
     msg_buyer = EmailMultiAlternatives(
@@ -193,10 +210,7 @@ def buy_now(request, slug):
     # 2. Seller is notified that someone wants to buy
     seller_email = item.created_by.email
     if seller_email:
-        seller_html = render_to_string(
-            'item/seller_notification_email.html',
-            {'item': item, 'size': size, 'buyer_email': email},
-        )
+        seller_html = render_to_string('item/seller_notification_email.html', ctx)
         msg_seller = EmailMultiAlternatives(
             subject=f"Nova kupovina - {item.name}",
             body="Neko želi da kupi tvoj dres.",

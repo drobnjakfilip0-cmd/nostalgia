@@ -9,8 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ── Core ──────────────────────────────────────────────────────────────────────
 SECRET_KEY    = os.environ['SECRET_KEY']
 DEBUG         = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost, 0.0.0.0,192.168.1.91').split(',')
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ALLOWED_HOSTS        = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost, 0.0.0.0').split(',')]
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1').split(',')]
+DEFAULT_AUTO_FIELD   = 'django.db.models.BigAutoField'
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 LOGIN_URL             = 'core:login'
@@ -38,11 +39,14 @@ if DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = False
     SECURE_HSTS_PRELOAD            = False
 else:
-    SECURE_SSL_REDIRECT            = True
-    SESSION_COOKIE_SECURE          = True
-    CSRF_COOKIE_SECURE             = True
-    SECURE_HSTS_SECONDS            = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    # SSL redirect and cookie security are handled by nginx in production.
+    # Set HTTPS_ENABLED=True in .env only after SSL is configured on the server.
+    _https = os.environ.get('HTTPS_ENABLED', 'False') == 'True'
+    SECURE_SSL_REDIRECT            = _https
+    SESSION_COOKIE_SECURE          = _https
+    CSRF_COOKIE_SECURE             = _https
+    SECURE_HSTS_SECONDS            = 31536000 if _https else 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = _https
     SECURE_HSTS_PRELOAD            = True
 
 SECURE_CONTENT_TYPE_NOSNIFF    = True
@@ -131,8 +135,8 @@ DATABASES = {
         'NAME':     os.getenv('DB_NAME', 'nostalgija'),
         'USER':     os.getenv('DB_USER', 'duborg_t'),
         'PASSWORD': os.getenv('PASSWORD_DB'),
-        'HOST':     'localhost',
-        'PORT':     '5432',
+        'HOST':     os.getenv('DB_HOST', 'localhost'),
+        'PORT':     os.getenv('DB_PORT', '5432'),
         'CONN_MAX_AGE': 60,
         # Validate connection before use — prevents stale connections from
         # causing session read failures that look like unexpected logouts.

@@ -182,16 +182,72 @@
 
             <input type="hidden" name="size" id="selectedSize">
 
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Vaš email</label>
-                <input type="email"
-                       name="email"
-                       required
+            <!-- EMAIL -->
+            <div class="mb-3">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                <input type="email" name="email" required
                        value="{{ request.user.email }}"
                        placeholder="example@email.com"
-                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm
-                              focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
                 <p class="text-xs text-gray-400 mt-1">Na ovu adresu šaljemo instrukcije za uplatu.</p>
+            </div>
+
+            <!-- IME I PREZIME -->
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ime</label>
+                    <input type="text" name="first_name" required
+                           value="{{ request.user.first_name }}"
+                           placeholder="Ime"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Prezime</label>
+                    <input type="text" name="last_name" required
+                           value="{{ request.user.last_name }}"
+                           placeholder="Prezime"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                </div>
+            </div>
+
+            <!-- GRAD I POŠTANSKI BROJ -->
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Grad</label>
+                    <input type="text" name="city" required
+                           placeholder="Beograd"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Poštanski broj</label>
+                    <input type="text" name="postal_code" required
+                           placeholder="11000"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                </div>
+            </div>
+
+            <!-- TELEFON -->
+            <div class="mb-3">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Broj telefona</label>
+                <input type="tel" name="phone" required
+                       placeholder="+381 60 123 4567"
+                       class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+            </div>
+
+            <!-- ULICA I BROJ -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <div class="col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ulica</label>
+                    <input type="text" name="street" required
+                           placeholder="Knez Mihailova"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Broj</label>
+                    <input type="text" name="street_number" required
+                           placeholder="12"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#c2410c] focus:border-[#c2410c] transition">
+                </div>
             </div>
 
             <button type="submit"
